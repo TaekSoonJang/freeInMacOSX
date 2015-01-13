@@ -1,0 +1,68 @@
+#!/usr/local/bin/python3
+
+'''
+Linux style 'Free' command for Mac OS X 10.10 (Yosemite)
+Version 0.1
+- It supports total, used, available, free memory and swap memory status.
+- 'Shared', 'Buffers', 'Cached' are not supported for current version.
+  These items are basically set to 0.
+- Only size-configuring option is supported.
+  No exception handling yet.
+
+This script is written in Python 3.4.2.
+To use this script, you should install 'psutil' python module.
+'''
+
+from psutil import virtual_memory
+from psutil import swap_memory
+import sys
+
+__author__ = 'taeksoonjang'
+
+mem = virtual_memory()
+swap = swap_memory()
+
+option_dic = {
+    "-g" : 1024 * 1024 * 1024,
+    "-m" : 1024 * 1024,
+    "-k" : 1024,
+    "-b" : 1
+}
+
+input_option='-k'                   ### basically show in kilobytes
+if (len(sys.argv) > 1):             ### if any option has been passed
+    input_option=sys.argv[1]
+
+dividend=option_dic[input_option]
+
+result=dict()
+result['total'] = mem.total
+result['used'] = mem.used
+result['free'] = mem.free
+result['shared'] = 0
+result['buffers'] = 0
+result['cached'] = 0
+result['real_used'] = mem.total - mem.available
+result['real_free'] = mem.available
+result['swap_total'] = swap.total
+result['swap_used'] = swap.used
+result['swap_free'] = swap.free
+
+result = {k: v / dividend for k, v in result.items()}
+
+full_digit=15
+
+print('%19s' % 'total' + '%15s' % 'used' + '%15s' % 'free' + '%15s' % 'shared' + '%15s' % 'buffers' + '%15s' % 'cached')
+print('Mem:' + '%*u' % (full_digit, result['total'])                    # total
+             + '%*u' % (full_digit, result['used'])                     # used
+             + '%*u' % (full_digit, result['free'])                     # free
+             + '%*u' % (full_digit, result['shared'])                   # shared
+             + '%*u' % (full_digit, result['buffers'])                  # buffers
+             + '%*u' % (full_digit, result['cached']))                  # cached
+
+print('-/+ buffers/cache:' + '%*u' %(full_digit+1, result['real_used']) # real used
+                           + '%*u' %(full_digit, result['real_free']))  # real free
+
+print('Swap:' + '%*u' %(full_digit - 1, result['swap_total'])           # swap total
+              + '%*u' %(full_digit, result['swap_used'])                # swap used
+              + '%*u' %(full_digit, result['swap_free']))               # swap cache
