@@ -1,5 +1,5 @@
 # Linux style 'free' command on Mac OS X
----
+
 Currently there is no *free* command on Mac OS X.
 
 But sometimes, you have scripts running on Linux and you want to run it on your local Mac machine.
@@ -7,8 +7,8 @@ But sometimes, you have scripts running on Linux and you want to run it on your 
 If those scripts have a part that parses some words from *free* command, you are in trouble.
 
 In that situation, you can use it.
-
 -----
+
 # Requirements
 
 * Python 3
